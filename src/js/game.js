@@ -1,27 +1,61 @@
-import '../css/style.css'
-import { Actor, Engine, Vector, DisplayMode } from "excalibur"
-import { Resources, ResourceLoader } from './resources.js'
+import { Engine, DisplayMode } from 'excalibur';
+import { IntroScene } from './introGame.js';
+import { TutorialScene } from './tutorialGame.js';
+import { MainScene } from './mainGame.js';
+import { EndScene } from './endGame.js';
+import { ResourceLoader } from './resources.js';
+import { Player } from './player.js';
 
 export class Game extends Engine {
-
     constructor() {
-        super({ 
-            width: 1280,
-            height: 720,
+        super({
+            width: 1024,
+            height: 1024,
             maxFps: 60,
-            displayMode: DisplayMode.FitScreen
-         })
-        this.start(ResourceLoader).then(() => this.startGame())
-    }
+            displayMode: DisplayMode.FitScreen,
+            antialiasing: false,
+        });
 
-    startGame() {
-        console.log("start de game!")
-        const fish = new Actor()
-        fish.graphics.use(Resources.Fish.toSprite())
-        fish.pos = new Vector(400, 300)
-        fish.vel = new Vector(-10,0)
-        this.add(fish)
-    }
-}
+        const introScene = new IntroScene(this);
+        this.add('intro', introScene);
 
-new Game()
+        const tutorialScene = new TutorialScene(this);
+        this.add('tutorial', tutorialScene);
+
+        const mainScene = new MainScene(this); // Instantiate MainScene
+        this.add('main', mainScene);
+
+        // Create and set EndScene
+        const endScene = new EndScene(this); // Instantiate EndScene
+        this.add('end', endScene);
+
+        // Load resources
+        this.start(ResourceLoader).then(() => {
+            // Set initial scene to IntroScene
+            this.gotoMyScene('intro');
+        });
+    } 
+
+    gotoMyScene(sceneName) {
+        switch (sceneName) {
+            case 'intro':
+                this.goToScene(sceneName);
+                break;
+            case 'tutorial':
+                this.goToScene(sceneName);
+                break;
+            case 'main':
+                this.goToScene(sceneName);
+                break;
+            case 'end':
+                this.goToScene(sceneName);
+                break;
+            // Add cases for other scenes as needed
+            default:
+                console.error('Invalid scene name');
+        }
+    }
+}    
+
+// Need to build an engine to start
+const game = new Game();
